@@ -1,0 +1,21 @@
+# Compiled MPI executables (rebuilt from the matching .c/.cc source + job*.pbs name)
+job1
+job2
+job3
+job4
+job5
+job6
+job7
+message1
+message2
+*.exe
+*.o
+*.obj
+
+# PBS/cluster job output & error logs
+*.o[0-9]*
+*.e[0-9]*
+
+# OS/editor cruft
+.DS_Store
+Thumbs.db
