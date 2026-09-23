@@ -1,0 +1,15 @@
+
+#PBS -l nodes=1
+#PBS -l walltime=00:02:00
+#PBS -l select=1
+cat $PBS_NODEFILE
+NPROC=2
+cd $PBS_O_WORKDIR
+MPISIZE=$NPROC
+MPIPROG=`basename $PBS_JOBNAME .pbs`
+echo 'Running MPI program' $MPIPROG 'on' $MPISIZE 'processes'
+echo 'Started at' `date`
+echo '--------------------------------------------------------------------------------'
+(time mpirun -n $MPISIZE ./$MPIPROG) 2>&1
+echo '--------------------------------------------------------------------------------'
+echo 'Finished at' `date`
