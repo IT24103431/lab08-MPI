@@ -1,26 +1,23 @@
-#include <cstdio>
-#include <cstdlib>
+// message1.cc  -  rank 0 sends one number to rank 1
+// mpicxx message1.cc -o message1 && mpirun -np 2 ./message1
 #include <mpi.h>
-int main(void)
-{
+#include <iostream>
+
+int main(int argc, char* argv[]) {
+    MPI_Init(&argc, &argv);
     int rank;
-    MPI_Status status;
-    MPI_Init(NULL, NULL);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    char name[30];
-    int len;
-    MPI_Get_processor_name( name, &len );
-    int x, y;
-    x = 30;
-    if (rank == 1) {
-      printf("SEnding message to computer 3 from computer 1\n");
-      MPI_Ssend(&x, 1, MPI_INT, 3, 0, MPI_COMM_WORLD);
+
+    int number;
+    if (rank == 0) {
+        number = 42;
+        MPI_Send(&number, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
+        std::cout << "Process 0 sent " << number << "\n";
+    } else if (rank == 1) {
+        MPI_Recv(&number, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        std::cout << "Process 1 received " << number << "\n";
     }
-    else if (rank == 3) {
-      MPI_Recv(&y, 1, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
-      printf("in computer 3 the value of y is %d\n", y);
-    }
-    else
-      printf("Just a normal process From rank %d machine %s\n", rank, name);
+
     MPI_Finalize();
+    return 0;
 }

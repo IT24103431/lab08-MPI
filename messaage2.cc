@@ -1,30 +1,25 @@
-#include <cstdio>
-#include <cstdlib>
+// message2.cc  -  rank 0 sends three numbers to rank 1 using the same variable
+// mpicxx message2.cc -o message2 && mpirun -np 2 ./message2
 #include <mpi.h>
-int main(void)
-{
-    int rank;
-    MPI_Status status;
-    MPI_Init(NULL, NULL);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    char name[30];
-    int len;
-    MPI_Get_processor_name( name, &len );
-    int x[10], y[10];
-    if (rank == 1) {
-      for (int r =0;r <10; r++)
-         x[r] = 10*r;
+#include <iostream>
 
-      printf("SEnding message to computer 3 from computer 1\n");
-      MPI_Ssend(x, 10, MPI_INT, 3, 0, MPI_COMM_WORLD);
+int main(int argc, char* argv[]) {
+    MPI_Init(&argc, &argv);
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int number;
+    for (int i = 0; i < 3; i++) {
+        if (rank == 0) {
+            number = i * 10;
+            MPI_Send(&number, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
+            std::cout << "Process 0 sent " << number << "\n";
+        } else if (rank == 1) {
+            MPI_Recv(&number, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            std::cout << "Process 1 received " << number << "\n";
+        }
     }
-    else if (rank == 3) {
-      MPI_Recv(y, 10, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
-      printf("in computer 3 the value of y is printed\n");
-      for (int r=0;r<10;r++)
-         printf(" %d ",y[r]);
-    }
-    else
-      printf("Just a normal process From rank %d machine %s\n", rank, name);
+
     MPI_Finalize();
+    return 0;
 }
