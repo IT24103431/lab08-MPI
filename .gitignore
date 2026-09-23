@@ -8,6 +8,8 @@ job6
 job7
 message1
 message2
+message1_mismatch
+message2_bsend
 *.exe
 *.o
 *.obj
